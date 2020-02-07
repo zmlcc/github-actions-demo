@@ -29,8 +29,8 @@ jobs:
       shell: bash
       run: |
         target=vmlinx-${{ steps.build_test.outputs.version }}.tar.gz
-        tar -czf build/$(target) linux/arch
-        echo ::set-output name=target::$(target)
+        tar -czf build/$target linux/arch
+        echo ::set-output name=target::$target
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
