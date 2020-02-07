@@ -11,45 +11,46 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Checkout submodules
-      shell: bash
-      run: |
-        git submodule sync --recursive
-        git submodule update --init --force --recursive --depth=1
+    # - name: Checkout submodules
+    #   shell: bash
+    #   run: |
+    #     git submodule sync --recursive
+    #     git submodule update --init --force --recursive --depth=1
 
-    - name: Install Requirements
-      run: sudo apt-get install libncurses-dev flex bison libssl-dev libelf-dev autoconf
-    - name: Build kernel
-      id: build_kernel
-      run: |
-        make all
-        echo ::set-output name=version::$(make version -s)
+    # - name: Install Requirements
+    #   run: sudo apt-get install libncurses-dev flex bison libssl-dev libelf-dev autoconf
+    # - name: Build kernel
+    #   id: build_kernel
+    #   run: |
+    #     make all
+    #     echo ::set-output name=version::$(make version -s)
     
     - name: Prepare Asset
       id: asset
       shell: bash
       run: |
         target=vmlinx-${{ steps.build_kernel.outputs.version }}.tar.gz
-        tar -czf $target build/vmlinux
+
         echo ::set-output name=target::$target
+        echo ::set-output name=tag::$(date +%y%m%d.%H%M)
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.sha }}
-        release_name: Release ${{ github.sha }}
+        tag_name: v${{ steps.asset.outputs.tag }} 
+        release_name: Release ${{ steps.asset.outputs.tag }} 
         draft: false
         prerelease: false
-    - name: Upload Release Asset
-      id: upload-release-asset 
-      uses: actions/upload-release-asset@v1.0.1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} 
-        asset_path: ${{ steps.asset.outputs.target }} 
-        asset_name: ${{ steps.asset.outputs.target }} 
-        asset_content_type: application/zip
+    # - name: Upload Release Asset
+    #   id: upload-release-asset 
+    #   uses: actions/upload-release-asset@v1.0.1
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with:
+    #     upload_url: ${{ steps.create_release.outputs.upload_url }} 
+    #     asset_path: ${{ steps.asset.outputs.target }} 
+    #     asset_name: ${{ steps.asset.outputs.target }} 
+    #     asset_content_type: application/zip
 
