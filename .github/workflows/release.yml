@@ -16,11 +16,15 @@ jobs:
       run: |
         git submodule sync --recursive
         git submodule update --init --force --recursive --depth=1
+
+    - name: Install Requirements
+      run: sudo apt-get install libncurses-dev flex bison libssl-dev libelf-dev autoconf
     - name: Build kernel
       id: build_kernel
       run: |
         make all
         echo ::set-output name=version::$(make version -s)
+    
     - name: Prepare Asset
       id: asset
       shell: bash
