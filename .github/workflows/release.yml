@@ -32,7 +32,7 @@ jobs:
         target=vmlinx-${{ steps.build_kernel.outputs.version }}.tar.gz
 
         echo ::set-output name=target::$target
-        echo ::set-output name=tag::$(date +%y%m%d.%H%M)
+        echo ::set-output name=tag::$(TZ='Asia/Shanghai' date +%y%m%d.%H%M)
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
