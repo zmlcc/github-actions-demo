@@ -10,8 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout source
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
+    - name: Checkout submodules
+      shell: bash
+      run: |
+        git submodule sync --recursive
+        git submodule update --init --force --recursive --depth=1
     # - name: Build kernel
     #   run: make all
     - name: build test
@@ -22,6 +26,7 @@ jobs:
         echo ::set-output name=version::$(make version -s)
     - name: Prepare Asset
       id: asset
+      shell: bash
       run: |
         target=vmlinx-${{ steps.build_test.outputs.version }}.tar.gz
         tar -czf build/$(target) linux/arch
