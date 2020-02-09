@@ -1,17 +1,19 @@
 WD=$(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 BUILD=$(WD)build
 
+ML=$(MAKE) -C linux O=$(BUILD)
+
 .PHONY: all build clean version
 
 all: clean build
 
 build:
-	$(MAKE) -C linux O=$(BUILD) allnoconfig
+	$(ML) allnoconfig
 	cp kernel-config $(BUILD)/.config
-	$(MAKE) -C linux O=$(BUILD) -j8 vmlinux
+	$(ML) -j8 vmlinux
 
 version:
-	$(MAKE) -C linux O=$(BUILD) -s kernelversion
+	$(ML) -s kernelversion
 
 clean:
-	$(MAKE) -C linux O=$(BUILD) mrproper
+	$(ML) mrproper
